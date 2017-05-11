@@ -64,7 +64,7 @@ try:
     # logging config.
     lib.init(log_cfg = pj.LogConfig(level=LOG_LEVEL, callback=log_cb))
     # Create UDP transport which listens to any available port
-    transport = lib.create_transport(pj.TransportType.TLS,
+    transport = lib.create_transport(pj.TransportType.UDP,
                                      pj.TransportConfig(0))
     print "\nListening on", transport.info().host,
     print "port", transport.info().port, "\n"
@@ -73,21 +73,23 @@ try:
     lib.start()
 
     # Create local account
-    ab4=raw_input("Enter IP address of the Server: ")
-    ab=raw_input("Enter Username: ")
+    server=raw_input("Enter IP address of the Server: ")
+    user=raw_input("Enter Username: ")
     ab1=raw_input("Enter Password: ")
     ab2=raw_input("Do you want to use the display name same as the username  Y/N ??")
     if ab2=="y" or ab2=="Y":
-        ab3=ab
+        ab3=user
     else:
         ab3=raw_input("Enter Display Name: ")
 
-    acc_conf = pj.AccountConfig(domain = ab4, username = ab, password =ab1, display = ab3, proxy="192.168.0.15:5061")
+    acc_conf = pj.AccountConfig(domain = server, username = user, password =ab1, display = ab3)
 
                               # registrar = 'sip:'+ab4+':5060', proxy = 'sip:'+ab4+':5060')
 
-    acc_conf.id ="sip:"+ab
-    acc_conf.reg_uri ='sip:'+ab4+':'+str(transport.info().port)
+    acc_conf.id ="sip:"+user
+    acc_conf.reg_uri ='sip:'+server+':'+str(transport.info().port)
+    acc_conf.use_srtp = 2
+    acc_conf.srtp_secure_signaling = 0
     acc_callback = MyAccountCallback(acc_conf)
     acc = lib.create_account(acc_conf,cb=acc_callback)
 
