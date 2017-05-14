@@ -514,7 +514,7 @@ uint8_t aes_ofb_test_case_3_plaintext[64] =  {
   0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
 };
 
-uint8_t aes_ofb_test_case_3_ciphertext[80] = {
+uint8_t aes_cbc_test_case_3_ciphertext[80] = {
   0xf5, 0x8c, 0x4c, 0x04, 0xd6, 0xe5, 0xf1, 0xba,
   0x77, 0x9e, 0xab, 0xfb, 0x5f, 0x7b, 0xfb, 0xd6,
   0x9c, 0xfc, 0x4e, 0x96, 0x7e, 0xdb, 0x80, 0x8d,
@@ -527,39 +527,39 @@ uint8_t aes_ofb_test_case_3_ciphertext[80] = {
   0x63, 0xc4, 0x68, 0xba, 0x84, 0x39, 0x16, 0x5a
 };
 
-uint8_t aes_ofb_test_case_3_iv[16] = {
+uint8_t aes_cbc_test_case_3_iv[16] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-cipher_test_case_t aes_ofb_test_case_3 = {
+cipher_test_case_t aes_cbc_test_case_3 = {
   32,                                    /* octets in key            */
-  aes_ofb_test_case_3_key,               /* key                      */
-  aes_ofb_test_case_3_iv,                /* initialization vector    */
+  aes_cbc_test_case_3_key,               /* key                      */
+  aes_cbc_test_case_3_iv,                /* initialization vector    */
   64,                                    /* octets in plaintext      */
-  aes_ofb_test_case_3_plaintext,         /* plaintext                */
+  aes_cbc_test_case_3_plaintext,         /* plaintext                */
   80,                                    /* octets in ciphertext     */
-  aes_ofb_test_case_3_ciphertext,        /* ciphertext               */
+  aes_cbc_test_case_3_ciphertext,        /* ciphertext               */
   0,
   NULL,
   0,
-  &aes_ofb_test_case_2                    /* pointer to next testcase */
+  &aes_cbc_test_case_2                    /* pointer to next testcase */
 };
 
-cipher_type_t aes_ofb = {
-  (cipher_alloc_func_t)          aes_ofb_alloc,
-  (cipher_dealloc_func_t)        aes_ofb_dealloc,  
-  (cipher_init_func_t)           aes_ofb_context_init,
+cipher_type_t aes_cbc = {
+  (cipher_alloc_func_t)          aes_cbc_alloc,
+  (cipher_dealloc_func_t)        aes_cbc_dealloc,  
+  (cipher_init_func_t)           aes_cbc_context_init,
   (cipher_set_aad_func_t)        0,
-  (cipher_encrypt_func_t)        aes_ofb_nist_encrypt,
-  (cipher_decrypt_func_t)        aes_ofb_nist_decrypt,
-  (cipher_set_iv_func_t)         aes_ofb_set_iv,
+  (cipher_encrypt_func_t)        aes_cbc_nist_encrypt,
+  (cipher_decrypt_func_t)        aes_cbc_nist_decrypt,
+  (cipher_set_iv_func_t)         aes_cbc_set_iv,
   (cipher_get_tag_func_t)        0,
-  (char *)                       aes_ofb_description,
+  (char *)                       aes_cbc_description,
   (int)                          0,   /* instance count */
-  (cipher_test_case_t *)        &aes_ofb_test_case_3,
-  (debug_module_t *)            &mod_aes_ofb,
-  (cipher_type_id_t)             AES_OFB
+  (cipher_test_case_t *)        &aes_cbc_test_case_3,
+  (debug_module_t *)            &mod_aes_cbc,
+  (cipher_type_id_t)             AES_CBC
 };
 
 
