@@ -317,9 +317,21 @@ aes_icm_set_iv(aes_icm_ctx_t *c, void *iv, int direction) {
   
 static inline void
 aes_icm_advance_ismacryp(aes_icm_ctx_t *c, uint8_t forIsmacryp) {
+  
+  int count = 0;
+  v128_t iv_aes = c->keystream_buffer;
+  v128_t *pointer_iv_aes = &iv_aes;
   /* fill buffer with new keystream */
   v128_copy(&c->keystream_buffer, &c->counter);
-  aes_encrypt(&c->keystream_buffer, &c->expanded_key);
+
+  //OFB
+  while(count < 4){
+    aes_encrypt(pointer_iv_aes, &c->expanded_key);
+    c->keystream_buffer.v32[count] = iv_aes.v32[count];
+    count++;
+  }
+
+  //aes_encrypt(&c->keystream_buffer, &c->expanded_key);
   c->bytes_in_buffer = sizeof(v128_t);
 
   debug_print(mod_aes_icm, "counter:    %s", 
@@ -372,10 +384,9 @@ aes_icm_encrypt_ismacryp(aes_icm_ctx_t *c,
     
     /* deal with odd case of small bytes_to_encr */
     for (i = (sizeof(v128_t) - c->bytes_in_buffer);
-		 i < (sizeof(v128_t) - c->bytes_in_buffer + bytes_to_encr); i++) 
-	{
+		 i < (sizeof(v128_t) - c->bytes_in_buffer + bytes_to_encr); i++) {
       *buf++ ^= c->keystream_buffer.v8[i];
-	}
+	  }
 
     c->bytes_in_buffer -= bytes_to_encr;
 
@@ -404,40 +415,40 @@ aes_icm_encrypt_ismacryp(aes_icm_ctx_t *c,
      * if we could assume 32-bit alignment!)
      */
 
-#if ALIGN_32
-    b = (uint32_t *)buf;
-    *b++ ^= c->keystream_buffer.v32[0];
-    *b++ ^= c->keystream_buffer.v32[1];
-    *b++ ^= c->keystream_buffer.v32[2];
-    *b++ ^= c->keystream_buffer.v32[3];
-    buf = (uint8_t *)b;
-#else    
-    if ((((unsigned long) buf) & 0x03) != 0) {
-      *buf++ ^= c->keystream_buffer.v8[0];
-      *buf++ ^= c->keystream_buffer.v8[1];
-      *buf++ ^= c->keystream_buffer.v8[2];
-      *buf++ ^= c->keystream_buffer.v8[3];
-      *buf++ ^= c->keystream_buffer.v8[4];
-      *buf++ ^= c->keystream_buffer.v8[5];
-      *buf++ ^= c->keystream_buffer.v8[6];
-      *buf++ ^= c->keystream_buffer.v8[7];
-      *buf++ ^= c->keystream_buffer.v8[8];
-      *buf++ ^= c->keystream_buffer.v8[9];
-      *buf++ ^= c->keystream_buffer.v8[10];
-      *buf++ ^= c->keystream_buffer.v8[11];
-      *buf++ ^= c->keystream_buffer.v8[12];
-      *buf++ ^= c->keystream_buffer.v8[13];
-      *buf++ ^= c->keystream_buffer.v8[14];
-      *buf++ ^= c->keystream_buffer.v8[15];
-    } else {
-      b = (uint32_t *)buf;
-      *b++ ^= c->keystream_buffer.v32[0];
-      *b++ ^= c->keystream_buffer.v32[1];
-      *b++ ^= c->keystream_buffer.v32[2];
-      *b++ ^= c->keystream_buffer.v32[3];
-      buf = (uint8_t *)b;
-    }
-#endif /* #if ALIGN_32 */
+    #if ALIGN_32
+        b = (uint32_t *)buf;
+        *b++ ^= c->keystream_buffer.v32[0];
+        *b++ ^= c->keystream_buffer.v32[1];
+        *b++ ^= c->keystream_buffer.v32[2];
+        *b++ ^= c->keystream_buffer.v32[3];
+        buf = (uint8_t *)b;
+    #else    
+        if ((((unsigned long) buf) & 0x03) != 0) {
+          *buf++ ^= c->keystream_buffer.v8[0];
+          *buf++ ^= c->keystream_buffer.v8[1];
+          *buf++ ^= c->keystream_buffer.v8[2];
+          *buf++ ^= c->keystream_buffer.v8[3];
+          *buf++ ^= c->keystream_buffer.v8[4];
+          *buf++ ^= c->keystream_buffer.v8[5];
+          *buf++ ^= c->keystream_buffer.v8[6];
+          *buf++ ^= c->keystream_buffer.v8[7];
+          *buf++ ^= c->keystream_buffer.v8[8];
+          *buf++ ^= c->keystream_buffer.v8[9];
+          *buf++ ^= c->keystream_buffer.v8[10];
+          *buf++ ^= c->keystream_buffer.v8[11];
+          *buf++ ^= c->keystream_buffer.v8[12];
+          *buf++ ^= c->keystream_buffer.v8[13];
+          *buf++ ^= c->keystream_buffer.v8[14];
+          *buf++ ^= c->keystream_buffer.v8[15];
+        } else {
+          b = (uint32_t *)buf;
+          *b++ ^= c->keystream_buffer.v32[0];
+          *b++ ^= c->keystream_buffer.v32[1];
+          *b++ ^= c->keystream_buffer.v32[2];
+          *b++ ^= c->keystream_buffer.v32[3];
+          buf = (uint8_t *)b;
+        }
+    #endif /* #if ALIGN_32 */
 
   }
   
