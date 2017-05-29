@@ -45,6 +45,9 @@ class MyCallCallback(pj.CallCallback):
             call_slot = self.call.info().conf_slot
             pj.Lib.instance().conf_connect(call_slot, 0)
             pj.Lib.instance().conf_connect(0, call_slot)
+            #self.wav_player_id=pjsua.Lib.instance().create_player('message.wav',loop=False)
+            #self.wav_slot=pjsua.Lib.instance().player_get_slot(self.wav_player_id)
+            #pjsua.Lib.instance().conf_connect(self.wav_slot, call_slot)
             print "Media is now active"
         else:
             print "Media is inactive"

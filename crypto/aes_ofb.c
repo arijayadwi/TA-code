@@ -185,10 +185,6 @@ aes_ofb_encrypt(aes_ofb_ctx_t *c,
    * encrypting and writing to output
    */
   while (bytes_to_encr > 0) {
-    
-    /* exor plaintext into state */
-    for (i=0; i < 16; i++)
-      c->state.v8[i] ^= *input++;
 
     debug_print(mod_aes_ofb, "inblock:  %s", 
 	      v128_hex_string(&c->state));
@@ -197,6 +193,10 @@ aes_ofb_encrypt(aes_ofb_ctx_t *c,
 
     debug_print(mod_aes_ofb, "outblock: %s", 
 	      v128_hex_string(&c->state));
+    
+    /* exor plaintext into state */
+    for (i=0; i < 16; i++)
+      c->state.v8[i] ^= *input++;
 
     /* copy ciphertext to output */
     for (i=0; i < 16; i++)

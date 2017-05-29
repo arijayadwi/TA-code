@@ -319,12 +319,13 @@ static inline void
 aes_icm_advance_ismacryp(aes_icm_ctx_t *c, uint8_t forIsmacryp) {
   
   int count = 0;
+  //Temp of the key stream
   v128_t iv_aes = c->keystream_buffer;
   v128_t *pointer_iv_aes = &iv_aes;
   /* fill buffer with new keystream */
   v128_copy(&c->keystream_buffer, &c->counter);
 
-  //OFB
+  //OFB Implementation 32-bits
   while(count < 4){
     aes_encrypt(pointer_iv_aes, &c->expanded_key);
     c->keystream_buffer.v32[count] = iv_aes.v32[count];
