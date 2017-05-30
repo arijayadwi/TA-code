@@ -1,5 +1,8 @@
 import sys
 import pjsua as pj
+import wave
+from time import sleep
+
 LOG_LEVEL=3
 current_call = None
 # Logging callback
@@ -38,16 +41,36 @@ class MyCallCallback(pj.CallCallback):
         if self.call.info().state == pj.CallState.DISCONNECTED:
             current_call = None
             print 'Current call is', current_call
+        # elif self.call.info().state == pj.CallState.CONFIRMED:
+        #     #Call is Answred
+        #     print "Call Answred"
+        #     wfile = wave.open("virgoun.wav")
+        #     time = (1.0 * wfile.getnframes ()) / wfile.getframerate ()
+        #     print str(time) + "ms"
+        #     wfile.close()
+        #     call_slot = self.call.info().conf_slot
+        #     self.wav_player_id=pj.Lib.instance().create_player('virgoun.wav',loop=False)
+        #     self.wav_slot=pj.Lib.instance().player_get_slot(self.wav_player_id)
+        #     pj.Lib.instance().conf_connect(self.wav_slot, call_slot)
+            #sleep(time)
+            #pj.Lib.instance().player_destroy(self.wav_player_id)
+            #self.call.hangup()
+            #in_call = False
     # Notification when call's media state has changed.
     def on_media_state(self):
         if self.call.info().media_state == pj.MediaState.ACTIVE:
             # Connect the call to sound device
             call_slot = self.call.info().conf_slot
+            # self.wav_player_id=pj.Lib.instance().create_player('virgoun.wav',loop=False)
+            # self.wav_slot=pj.Lib.instance().player_get_slot(self.wav_player_id)
+            # print "id wav " + str(self.wav_player_id)
+            # print "id wav slot " + str(self.wav_slot)
             pj.Lib.instance().conf_connect(call_slot, 0)
             pj.Lib.instance().conf_connect(0, call_slot)
-            #self.wav_player_id=pjsua.Lib.instance().create_player('message.wav',loop=False)
-            #self.wav_slot=pjsua.Lib.instance().player_get_slot(self.wav_player_id)
-            #pjsua.Lib.instance().conf_connect(self.wav_slot, call_slot)
+            # self.wav_player_id=pj.Lib.instance().create_player('09_ONE_OK_ROCK_Wherever_You_Are.wav',loop=False)
+            # pj.Lib.instance().conf_connect(call_slot, self.wav_slot)
+            # pj.Lib.instance().conf_connect(self.wav_slot, call_slot)
+            # pj.Lib.instance().conf_connect(call_slot, self.wav_slot)
             print "Media is now active"
         else:
             print "Media is inactive"
@@ -66,6 +89,7 @@ try:
     # Init library with default config and some customized
     # logging config.
     lib.init(log_cfg = pj.LogConfig(level=LOG_LEVEL, callback=log_cb))
+    # lib.set_null_snd_dev()
     # Create UDP transport which listens to any available port
     transport = lib.create_transport(pj.TransportType.UDP,
                                      pj.TransportConfig(0))
@@ -76,14 +100,17 @@ try:
     lib.start()
 
     # Create local account
-    server=raw_input("Enter IP address of the Server: ")
+    # server=raw_input("Enter IP address of the Server: ")
+    server = "10.151.34.221"
     user=raw_input("Enter Username: ")
-    ab1=raw_input("Enter Password: ")
-    ab2=raw_input("Do you want to use the display name same as the username  Y/N ??")
-    if ab2=="y" or ab2=="Y":
-        ab3=user
-    else:
-        ab3=raw_input("Enter Display Name: ")
+    # ab1=raw_input("Enter Password: ")
+    ab1 = "123456"
+    ab3 = "y"
+    # ab2=raw_input("Do you want to use the display name same as the username  Y/N ??")
+    # if ab2=="y" or ab2=="Y":
+    #     ab3=user
+    # else:
+    #     ab3=raw_input("Enter Display Name: ")
 
     acc_conf = pj.AccountConfig(domain = server, username = user, password =ab1, display = ab3)
 
